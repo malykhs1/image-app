@@ -5,3 +5,55 @@ body {
   font-size: 14px;
   line-height: 1.4286;
 }
+
+/* Step indicators */
+[anvil-role="step-active"] {
+  color: #000000;
+  font-weight: 700;
+  border-bottom: 3px solid #FFB84D;
+  padding-bottom: 8px;
+  cursor: pointer;
+}
+
+[anvil-role="step-inactive"] {
+  color: #999999;
+  font-weight: 400;
+  cursor: pointer;
+  padding-bottom: 8px;
+}
+
+[anvil-role="step-inactive"]:hover {
+  color: #666666;
+}
+
+/* Upload panel */
+[anvil-role="upload-panel"] {
+  min-height: 500px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: #FFFFFF;
+  border-radius: 50%;
+  max-width: 600px;
+  max-height: 600px;
+  aspect-ratio: 1;
+  margin: 40px auto;
+  padding: 60px;
+}
+
+/* Crop panel */
+[anvil-role="crop-panel"] {
+  min-height: 500px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin: 40px auto;
+}
+
+/* Canvas styling */
+canvas {
+  border-radius: 50%;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}

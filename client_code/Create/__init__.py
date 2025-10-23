@@ -26,7 +26,7 @@ class Create(CreateTemplate):
   def __init__(self, **properties):
     url_params = anvil.js.call_js('getUrlParams')
     self.locale = url_params.get('locale', 'en')
-    #print(f'locale: {self.locale}')
+    self.current_step = 1  # Текущий этап: 1, 2 или 3
     self.brush_size = 10
     # Set Form properties and Data Bindings.
     self.init_components(**properties)
@@ -39,11 +39,24 @@ class Create(CreateTemplate):
     # Determine if the user is from mobile or PC
     self.is_mobile = any(p in platform for p in ["Android", "iPhone", "iPad", "iOS"])
 
+    # Локализация
     if self.locale == 'he':
       self.file_loader_1.text = 'העלאת תמונה'
       self.file_loader_1.font_family = 'Rubik'
       self.button_create.text = 'צור הדמיית חוטים'
       self.button_create.font_family = 'Rubik'
+      self.label_upload_title.text = 'העלה את התמונה שלך'
+      self.label_upload_title.font_family = 'Rubik'
+      self.label_upload_subtitle.text = 'אנו תומכים בקבצי png ו-jpg'
+      self.label_upload_subtitle.font_family = 'Rubik'
+      self.button_close.text = 'סגור'
+      self.button_close.font_family = 'Rubik'
+      self.step_indicator_1.text = '1/3    העלאת קובץ'
+      self.step_indicator_1.font_family = 'Rubik'
+      self.step_indicator_2.text = '2/3    התאמת חיתוך'
+      self.step_indicator_2.font_family = 'Rubik'
+      self.step_indicator_3.text = '3/3    קבל את היצירה שלך'
+      self.step_indicator_3.font_family = 'Rubik'
 
     self.erase_mode = False
     self.enhance_mode = False
@@ -72,28 +85,76 @@ class Create(CreateTemplate):
     self.canvas_1.width = self.cvsW
     self.canvas_1.remove_from_parent()
     self.flow_panel_canvas.add_component(self.canvas_1)
-    self.canvas_1.visible = True
+    self.canvas_1.visible = False  # Скрываем canvas до загрузки изображения
     self.drawCanvas()
     self.setup_drag_and_drop()
     
-    # with anvil.server.no_loading_indicator:
-    #   self.timer_1.interval = 0.5
-    #   self.task = anvil.server.call_s('launch_bg_get_creations')
-    self.force_resize()
-
-  def force_resize(self):
-    self.file_loader_1.visible = False
-    for comp in self.column_panel_dummy.get_components():
-        comp.remove_from_parent()
-    if len(self.flow_panel_creations.get_components()) == 0:
-      pass #self.column_panel_dummy.add_component(Spacer(height=468))
-    else:
-      self.column_panel_dummy.add_component(Spacer(height=10))
-    self.file_loader_1.visible = True
+    # Устанавливаем начальный этап
+    self.set_step(1)
 
   def form_show(self, **event_args):
     """This method is called when the form is shown on the page"""
     pass
+
+  # Методы управления этапами
+  def set_step(self, step):
+    """Переключение между этапами"""
+    self.current_step = step
+    
+    # Скрываем все панели
+    self.step1_panel.visible = False
+    self.step2_panel.visible = False
+    self.flow_panel_creations.visible = False
+    
+    # Обновляем индикаторы этапов
+    self.step_indicator_1.role = 'step-inactive'
+    self.step_indicator_1.bold = False
+    self.step_indicator_2.role = 'step-inactive'
+    self.step_indicator_2.bold = False
+    self.step_indicator_3.role = 'step-inactive'
+    self.step_indicator_3.bold = False
+    
+    # Показываем нужную панель и активируем индикатор
+    if step == 1:
+      self.step1_panel.visible = True
+      self.step_indicator_1.role = 'step-active'
+      self.step_indicator_1.bold = True
+      self.button_close.visible = False
+    elif step == 2:
+      self.step2_panel.visible = True
+      self.step_indicator_2.role = 'step-active'
+      self.step_indicator_2.bold = True
+      self.button_close.visible = True
+      self.canvas_1.visible = True
+      self.flow_panel_zoom.visible = True
+      self.button_create.visible = True
+      self.drawCanvas()
+    elif step == 3:
+      self.flow_panel_creations.visible = True
+      self.step_indicator_3.role = 'step-active'
+      self.step_indicator_3.bold = True
+      self.button_close.visible = False
+
+  def step_indicator_1_click(self, **event_args):
+    """Переход к этапу 1"""
+    self.set_step(1)
+
+  def step_indicator_2_click(self, **event_args):
+    """Переход к этапу 2"""
+    if self.img is not None:  # Можно перейти только если изображение загружено
+      self.set_step(2)
+
+  def step_indicator_3_click(self, **event_args):
+    """Переход к этапу 3"""
+    if len(self.flow_panel_creations.get_components()) > 0:  # Есть результаты
+      self.set_step(3)
+
+  def button_close_click(self, **event_args):
+    """Закрытие и возврат к этапу 1"""
+    self.img = None
+    self.resetMoveAndZoom()
+    self.canvas_1.visible = False
+    self.set_step(1)
 
   def setup_drag_and_drop(self):
     drop_panel_node = get_dom_node(self.flow_panel_canvas)
@@ -105,7 +166,6 @@ class Create(CreateTemplate):
       comp.remove_from_parent()
     for c in my_creations.search(tables.order_by('created_at', ascending=False)):
       self.flow_panel_creations.add_component(Creation(locale=self.locale,item=c), width=CARD_WIDTH)
-    self.force_resize()
 
   def handle_drag_drop(self, content_type, data, name):
     if 'image' in content_type:
@@ -128,12 +188,9 @@ class Create(CreateTemplate):
       self.minWH = min(self.imgW,self.imgH)
       self.resetMoveAndZoom()
       self.mvRatio = self.minWH/self.canvas_1.width
-      self.flow_panel_zoom.visible = True
-      self.button_create.visible = True
-      self.spacer_create.visible = False
-      self.flow_panel_canvas.visible = True
       self.drawCanvas()
-      self.force_resize()
+      # Автоматически переходим к этапу 2 после загрузки изображения
+      self.set_step(2)
     else:
       alert(f"Maximal size is {MAX_MB_IMG} MB",title="File size too large",large=True,dismissible=False)
     
@@ -164,7 +221,6 @@ class Create(CreateTemplate):
     self.linear_progress.visible = True
     self.spacer_progress.visible = True
     self.button_create.visible = False
-    self.force_resize()
     ############# call SERVER function ################
     try:
       row = anvil.server.call('create',cropped_img,paramsDict,mask_img,self.img.name) #nLines,resMediaImg
@@ -185,7 +241,10 @@ class Create(CreateTemplate):
     #display results
     comp = Creation(locale=self.locale,item=row)
     self.flow_panel_creations.add_component(comp, width=CARD_WIDTH, index=0)
-    self.force_resize()
+    
+    # Автоматически переходим к этапу 3 после генерации
+    self.set_step(3)
+    
     #on mobile - scroll to the result
     if self.is_mobile:
       anvil.js.window.setTimeout(lambda: comp.scroll_into_view(), 100)

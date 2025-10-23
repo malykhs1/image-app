@@ -38,7 +38,6 @@ class Creation(CreationTemplate):
 
   def link_delete_click(self, **event_args):
     self.remove_from_parent()
-    get_open_form().force_resize()
     anvil.server.call_s('delete_creation', self.item)
 
   def button_add_to_cart_click(self, **event_args):
