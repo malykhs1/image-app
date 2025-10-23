@@ -1,0 +1,75 @@
+components:
+- event_bindings: {tick: timer_1_tick}
+  layout_properties: {slot: default}
+  name: timer_1
+  properties: {interval: 0}
+  type: Timer
+- event_bindings: {change: file_loader_1_change}
+  layout_properties: {slot: default}
+  name: file_loader_1
+  properties: {align: center, appearance: elevated, bold: false, file_types: image/*, show_state: false, text: UPLOAD IMAGE}
+  type: form:dep_lin1x4oec0ytd:_Components.FileLoader
+- components:
+  - event_bindings: {mouse_down: canvas_1_mouse_down, mouse_leave: canvas_1_mouse_leave, mouse_move: canvas_1_mouse_move, mouse_up: canvas_1_mouse_up, reset: canvas_1_reset}
+    layout_properties: {width: 122.6015625}
+    name: canvas_1
+    properties: {}
+    type: Canvas
+  layout_properties: {slot: default}
+  name: flow_panel_canvas
+  properties: {align: center}
+  type: FlowPanel
+- components:
+  - event_bindings: {tick: timer_0_tick}
+    layout_properties: {grid_position: 'RSRXBD,ICENZC'}
+    name: timer_0
+    properties: {}
+    type: Timer
+  - components:
+    - event_bindings: {click: button_minus_click}
+      layout_properties: {}
+      name: button_minus
+      properties: {appearance: tonal, icon: 'mi:zoom_out'}
+      type: form:dep_lin1x4oec0ytd:_Components.IconButton
+    - event_bindings: {click: button_plus_click}
+      layout_properties: {}
+      name: button_plus
+      properties: {appearance: tonal, icon: 'mi:zoom_in'}
+      type: form:dep_lin1x4oec0ytd:_Components.IconButton
+    layout_properties: {grid_position: 'SGZSKI,ZZOBUR'}
+    name: flow_panel_zoom
+    properties: {align: center, visible: false}
+    type: FlowPanel
+  - event_bindings: {click: button_create_click}
+    layout_properties: {grid_position: 'GOIVRJ,VBNZAL'}
+    name: button_create
+    properties: {align: center, appearance: elevated, icon: 'mi:nest_true_radiant', icon_align: left, text: Weave!, visible: false}
+    type: form:dep_lin1x4oec0ytd:_Components.Button
+  - layout_properties: {grid_position: 'KRYZEQ,PWANIU'}
+    name: spacer_create
+    properties: {height: '104'}
+    type: Spacer
+  - layout_properties: {grid_position: 'KMYXGC,GVGONG'}
+    name: spacer_progress
+    properties: {height: '37', visible: false}
+    type: Spacer
+  layout_properties: {slot: default}
+  name: create_panel
+  properties: {visible: true}
+  type: ColumnPanel
+- layout_properties: {slot: default}
+  name: linear_progress
+  properties: {visible: false}
+  type: form:dep_lin1x4oec0ytd:_Components.LinearProgressIndicator
+- layout_properties: {slot: default}
+  name: flow_panel_creations
+  properties: {align: center, visible: true}
+  type: FlowPanel
+- layout_properties: {slot: default}
+  name: column_panel_dummy
+  properties: {visible: true}
+  type: ColumnPanel
+container:
+  properties: {html: ''}
+  type: HtmlTemplate
+is_package: true

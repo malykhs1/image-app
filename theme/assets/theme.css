@@ -1,0 +1,7 @@
+/* Typography */
+body {
+  /*added Montserrat as default*/
+  font-family: sans-serif, "Rubik"; 
+  font-size: 14px;
+  line-height: 1.4286;
+}
