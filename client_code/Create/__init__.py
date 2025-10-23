@@ -173,7 +173,8 @@ class Create(CreateTemplate):
       self.linear_progress.visible = False
       self.spacer_progress.visible = False
       self.button_create.visible = True
-      anvil.server.call('send_telegram_message','Someone is trying to create and server is down!')
+      # Telegram отключен
+      # anvil.server.call('send_telegram_message','Someone is trying to create and server is down!')
       alert('The server is currently unreachable. Please try again soon.')
       return
 

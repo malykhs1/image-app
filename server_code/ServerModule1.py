@@ -6,13 +6,14 @@ import anvil.server
 import Shopify_API
 import requests
 
-@anvil.server.callable
-def send_telegram_message(message):
-  BOT_TOKEN = '7125646035:AAFyT7KcJx0FSBQG5KJ-xhEnxuSRYAfhaPQ'
-  CHAT_ID = '909283054'
-  url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage?chat_id={CHAT_ID}&text={message}"
-  response = requests.get(url)
-  return response.json()
+# Telegram отключен
+# @anvil.server.callable
+# def send_telegram_message(message):
+#   BOT_TOKEN = '7125646035:AAFyT7KcJx0FSBQG5KJ-xhEnxuSRYAfhaPQ'
+#   CHAT_ID = '909283054'
+#   url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage?chat_id={CHAT_ID}&text={message}"
+#   response = requests.get(url)
+#   return response.json()
 
 @anvil.server.callable
 def get_session_id():
