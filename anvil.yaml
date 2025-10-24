@@ -87,3 +87,4 @@ services:
   source: /runtime/services/anvil/secrets.yml
 startup: {module: Create, type: form}
 startup_form: null
+uplink_visible: true
