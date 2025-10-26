@@ -50,19 +50,19 @@ components:
     type: FlowPanel
   - components:
     - components:
-      - event_bindings: {click: button_minus_click}
-        layout_properties: {}
-        name: button_minus
-        properties: {appearance: text, icon: 'mi:search', icon_align: top, spacing_above: none, spacing_below: none, text: ZOOM}
-        type: form:dep_lin1x4oec0ytd:_Components.Button
       - event_bindings: {click: button_plus_click}
         layout_properties: {}
         name: button_plus
-        properties: {appearance: text, icon: 'mi:add', visible: false}
+        properties: {appearance: text, icon: 'mi:zoom_in', spacing_above: none, spacing_below: none}
+        type: form:dep_lin1x4oec0ytd:_Components.IconButton
+      - event_bindings: {click: button_minus_click}
+        layout_properties: {}
+        name: button_minus
+        properties: {appearance: text, icon: 'mi:zoom_out', spacing_above: none, spacing_below: none}
         type: form:dep_lin1x4oec0ytd:_Components.IconButton
       layout_properties: {grid_position: 'SGZSKI,ZZOBUR'}
       name: flow_panel_zoom
-      properties: {align: left, spacing_above: none, spacing_below: none, visible: false}
+      properties: {align: center, spacing_above: none, spacing_below: small, visible: false}
       type: FlowPanel
     - event_bindings: {click: button_create_click}
       layout_properties: {grid_position: 'GOIVRJ,VBNZAL'}
@@ -93,17 +93,17 @@ components:
   - event_bindings: {click: step_indicator_1_click}
     layout_properties: {}
     name: step_indicator_1
-    properties: {align: center, bold: true, font_size: 16, role: step-active, spacing_above: none, spacing_below: small, text: '1/3    Upload file'}
+    properties: {align: center, bold: true, font_size: 18, role: step-active, spacing_above: small, spacing_below: small, text: '1/3    Upload file'}
     type: Label
   - event_bindings: {click: step_indicator_2_click}
     layout_properties: {}
     name: step_indicator_2
-    properties: {align: center, font_size: 16, role: step-inactive, spacing_above: none, spacing_below: small, text: '2/3    Adjust crop'}
+    properties: {align: center, font_size: 18, role: step-inactive, spacing_above: small, spacing_below: small, text: '2/3    Adjust crop'}
     type: Label
   - event_bindings: {click: step_indicator_3_click}
     layout_properties: {}
     name: step_indicator_3
-    properties: {align: center, font_size: 16, role: step-inactive, spacing_above: none, spacing_below: small, text: '3/3    Get your Artwork'}
+    properties: {align: center, font_size: 18, role: step-inactive, spacing_above: small, spacing_below: small, text: '3/3    Get your Artwork'}
     type: Label
   layout_properties: {slot: default}
   name: footer_panel
