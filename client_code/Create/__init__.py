@@ -1,11 +1,9 @@
 from ._anvil_designer import CreateTemplate
 from anvil import *
 import anvil.server
-import anvil.tables as tables
-from anvil.tables import app_tables
 
 import anvil.js
-from anvil.js import window, get_dom_node, call_js
+from anvil.js import window
 
 MAX_MB_IMG = 15
 WH_IMG = 625
@@ -22,95 +20,152 @@ class Point():
 
 class Create(CreateTemplate):
   def __init__(self, **properties):
-    # Initialize Anvil components
+    # Сначала инициализируем компоненты
     self.init_components(**properties)
 
-    # === Register JS bridges (universal method) ===
-    try:
-      anvil.js.call_js("anvil.callables.set", "set_canvas_ref", self.set_canvas_ref)
-      anvil.js.call_js("anvil.callables.set", "file_loader_1_change", self.file_loader_1_change)
-      anvil.js.call_js("anvil.callables.set", "button_create_click", self.button_create_click)
-      print("✅ JS callables registered via anvil.callables.set")
-    except Exception as e:
-      print("⚠️ Fallback registration:", e)
-      window.set_canvas_ref = self.set_canvas_ref
-      window.file_loader_1_change = self.file_loader_1_change
-      window.button_create_click = self.button_create_click
-
-    # === Initialize state ===
+    # Состояние
     self.locale = "en"
     self.img = None
     self.canvas_1 = None
-    self.brush_size = 10
-    self.mvRatio = 1
     self.zoom = 1
     self.dz = 0
-    self.sx = self.sy = self.dx = self.dy = 0
-    self.erase_mode = False
-    self.enhance_mode = False
-    self.pointer_xy = None
-    self.erase_points = []
-    self.enhance_points = []
-    self.curr_op_id = 0
-    self.ops_history = []
+    self.dx = 0
+    self.dy = 0
+    self.sx = 0
+    self.sy = 0
+    self.minWH = 300
     self.cvsW = 300
 
-    # Detect mobile
-    if hasattr(window.navigator, "userAgentData") and window.navigator.userAgentData is not None:
-      platform = window.navigator.userAgentData.platform
-    else:
-      platform = window.navigator.userAgent
-    self.is_mobile = any(p in platform for p in ["Android", "iPhone", "iPad", "iOS"])
+    print("✅ Create initialized (awaiting canvas)")
 
-    print("✅ Create form initialized. Waiting for canvas connection...")
+  # ====== JS → Python мост через anvil.call(...) ======
 
-  # === JS bridge: receive canvas reference ===
+  @anvil.js.callable
   def set_canvas_ref(self, js_canvas):
+    """Получаем canvas из HTML и сохраняем ссылку"""
     try:
-      self.canvas_1 = anvil.js.wrap_dom_element(js_canvas)
-      print("🎨 Canvas connected successfully:", self.canvas_1)
+      # Если пришёл "сырой" DOM-элемент — оборачиваем
+      if not hasattr(js_canvas, "getContext"):
+        js_canvas = anvil.js.wrap_dom_element(js_canvas)
+      self.canvas_1 = js_canvas
+      print("🎨 Canvas connected successfully.")
+      self.drawCanvas()
     except Exception as e:
-      print("❌ Failed to connect canvas:", e)
+      print("❌ Canvas init error:", e)
 
-  # === File upload ===
+  @anvil.js.callable
   def file_loader_1_change(self, file, **event_args):
-    print("📁 File received:", file)
-    self.file_loaded(file)
+    """Получаем загруженный файл из HTML input"""
+    try:
+      print("📁 File received:", file)
+      self.file_loaded(file)
+    except Exception as e:
+      print("❌ file_loader_1_change error:", e)
 
-  def file_loaded(self, file):
-    if file is None:
-      return
-    if file.length < MAX_MB_IMG * 1024 * 1024:
-      self.img = file
-      print("🖼️ Image loaded successfully")
-      if self.canvas_1:
-        self.drawCanvas()
-    else:
-      alert(f"Max size is {MAX_MB_IMG} MB", title="File too large")
-
-  # === Main button ===
+  @anvil.js.callable
   def button_create_click(self, **event_args):
-    print("🎯 Button 'Create Artwork' clicked")
+    """Нажатие Download / Create — вызывается из HTML"""
+    print("🚀 Starting artwork creation...")
     if not self.img:
       alert("Please upload an image first!")
       return
-    alert("Simulating artwork creation... (you can call anvil.server.call here)")
+    try:
+      # Здесь твоя прежняя логика — параметры генерации
+      speedText = "very fast"
+      effectIntensity = 2
+      effectType = "clahe"
+      noMask = True
+      mask_img = None
+      cloth = False
+      discDiam = 400
 
-  # === Draw something on canvas ===
-  def drawCanvas(self):
-    if not self.canvas_1:
-      print("⚠️ Canvas not connected yet")
+      # subRect — как раньше (если надо — доработаем позже)
+      zoom = self.zoom + self.dz
+      left = round(self.sx + self.dx)
+      top = round(self.sy + self.dy)
+      right = left + int(self.minWH * zoom)
+      bot = top + int(self.minWH * zoom)
+      subRect = (left, top, right, bot)
+
+      cropped_img = self.get_cropped_img()
+
+      paramsDict = {
+        "speedText": speedText,
+        "effectType": effectType,
+        "effectIntensity": effectIntensity,
+        "cloth": cloth,
+        "noMask": noMask,
+        "subRect": subRect,
+        "discDiam": discDiam
+      }
+
+      print("📡 Calling backend...")
+      row = anvil.server.call('create', cropped_img, paramsDict, mask_img, getattr(self.img, "name", "uploaded.jpg"))
+      print("✅ Product created successfully in Shopify!")
+      alert("Product created successfully!")
+
+      # Если хочешь — здесь можно показать превью / добавить в список
+      # comp = Creation(locale=self.locale, item=row)
+
+    except Exception as e:
+      print("❌ Error:", e)
+      alert("Server is currently unreachable. Please try again soon.")
+
+  # ====== Клиентская логика работы с картинкой ======
+
+  def file_loaded(self, file):
+    if not file:
+      return
+    # File может прийти как JS File (имеет .size), либо Anvil Media (имеет .length)
+    size = getattr(file, "size", None) or getattr(file, "length", None)
+    if size and size > MAX_MB_IMG * 1024 * 1024:
+      alert(f"Maximal size is {MAX_MB_IMG} MB", title="File too large")
       return
 
-    ctx = self.canvas_1.getContext("2d")
-    ctx.fillStyle = "#fafafa"
-    ctx.fillRect(0, 0, self.canvas_1.width, self.canvas_1.height)
-    ctx.beginPath()
-    ctx.arc(self.canvas_1.width / 2, self.canvas_1.height / 2, 120, 0, 6.283)
-    ctx.fillStyle = "#FFD48A"
-    ctx.fill()
-    ctx.fillStyle = "#000"
-    ctx.font = "16px Inter"
-    ctx.textAlign = "center"
-    ctx.fillText("Your uploaded image", self.canvas_1.width / 2, self.canvas_1.height / 2 + 150)
-    print("🖌️ Canvas drawn successfully.")
+    self.img = file
+    print("🖼️ Image loaded successfully")
+
+    if self.canvas_1:
+      self.drawCanvas()
+    else:
+      print("⚠️ Canvas not ready yet — skipping draw.")
+
+  def drawCanvas(self):
+    """Простая отрисовка-заглушка: круг + подпись.
+       Реальный crop/zoom/drag добавим отдельным шагом."""
+    if not self.canvas_1:
+      print("⚠️ Canvas not connected yet.")
+      return
+
+    try:
+      ctx = self.canvas_1.getContext("2d")
+      ctx.clearRect(0, 0, self.canvas_1.width, self.canvas_1.height)
+
+      if not self.img:
+        # Placeholder до загрузки
+        ctx.fillStyle = "#f3f3f3"
+        ctx.fillRect(0, 0, self.canvas_1.width, self.canvas_1.height)
+        ctx.fillStyle = "#777"
+        ctx.font = "16px Inter"
+        ctx.textAlign = "center"
+        ctx.fillText("Upload your image", self.canvas_1.width / 2, self.canvas_1.height / 2)
+        return
+
+      # Пока просто рисуем «рамку»
+      ctx.fillStyle = "#FFD48A"
+      ctx.beginPath()
+      ctx.arc(self.canvas_1.width / 2, self.canvas_1.height / 2, 120, 0, 6.283)
+      ctx.fill()
+      ctx.fillStyle = "#000"
+      ctx.font = "16px Inter"
+      ctx.textAlign = "center"
+      ctx.fillText("Your uploaded image", self.canvas_1.width / 2, self.canvas_1.height / 2 + 150)
+      print("🖌️ Canvas drawn successfully.")
+    except Exception as e:
+      print("❌ drawCanvas error:", e)
+
+  def get_cropped_img(self):
+    """Если используешь Anvil-Canvas API на клиенте — можно кропнуть здесь.
+       Сейчас возвращаем исходный файл, чтобы не блокировать сценарий.
+       (Позже добавим реальный crop из HTML5 canvas → BlobMedia → Python)"""
+    return self.img
