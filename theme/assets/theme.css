@@ -4,26 +4,37 @@ body {
   font-family: sans-serif, "Rubik"; 
   font-size: 14px;
   line-height: 1.4286;
+  background-image: url('background.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  min-height: 100vh;
 }
 
-/* Step indicators */
+/* Step indicators - with white background */
 [anvil-role="step-active"] {
   color: #000000;
   font-weight: 700;
   border-bottom: 3px solid #FFB84D;
-  padding-bottom: 8px;
+  padding: 12px 20px 8px 20px;
   cursor: pointer;
+  background-color: rgba(255, 255, 255, 0.95);
+  border-radius: 8px 8px 0 0;
 }
 
 [anvil-role="step-inactive"] {
-  color: #999999;
+  color: #666666;
   font-weight: 400;
   cursor: pointer;
-  padding-bottom: 8px;
+  padding: 12px 20px 8px 20px;
+  background-color: rgba(255, 255, 255, 0.85);
+  border-radius: 8px 8px 0 0;
 }
 
 [anvil-role="step-inactive"]:hover {
-  color: #666666;
+  color: #333333;
+  background-color: rgba(255, 255, 255, 0.95);
 }
 
 /* Upload panel */
