@@ -5,6 +5,7 @@ from anvil.tables import app_tables
 import anvil.server
 import Shopify_API
 import requests
+from datetime import datetime
 
 # Telegram отключен
 # @anvil.server.callable
@@ -14,6 +15,29 @@ import requests
 #   url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage?chat_id={CHAT_ID}&text={message}"
 #   response = requests.get(url)
 #   return response.json()
+
+@anvil.server.callable
+def create(cropped_img, paramsDict, mask_img, img_name):
+  """Создание artwork из изображения (временная заглушка)"""
+  session_id = get_session_id()
+  
+  # ВРЕМЕННО: Пока без обработки - просто сохраняем исходное изображение
+  # TODO: Добавить реальную обработку изображения (эффект нитей/плетения)
+  
+  # Временный расчет длины нити (можно заменить на реальный алгоритм)
+  wire_len_km = 0.5  # Примерное значение в километрах
+  
+  # Сохраняем в базу данных
+  row = app_tables.creations.add_row(
+    session_id=session_id,
+    in_image=cropped_img,
+    out_image=cropped_img,  # Пока возвращаем то же изображение
+    out_image_medium=cropped_img,
+    wire_len_km=wire_len_km,
+    created_at=datetime.now()
+  )
+  
+  return row
 
 @anvil.server.callable
 def get_session_id():

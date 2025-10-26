@@ -28,32 +28,43 @@ body {
 
 /* Upload panel */
 [anvil-role="upload-panel"] {
-  min-height: 500px;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   background: #FFFFFF;
   border-radius: 50%;
-  max-width: 600px;
-  max-height: 600px;
+  max-width: 500px;
+  max-height: 500px;
   aspect-ratio: 1;
-  margin: 40px auto;
-  padding: 60px;
+  margin: 20px auto;
+  padding: 40px;
 }
 
 /* Crop panel */
 [anvil-role="crop-panel"] {
-  min-height: 500px;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  margin: 40px auto;
+  margin: 10px auto;
+  gap: 15px;
 }
 
 /* Canvas styling */
 canvas {
   border-radius: 50%;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  margin: 10px 0;
+}
+
+/* Compact spacing for form elements */
+.anvil-role-crop-panel > * {
+  margin: 5px 0 !important;
+}
+
+/* Generate button styling */
+[anvil-role="crop-panel"] button {
+  margin-top: 15px !important;
+  margin-bottom: 5px !important;
 }
