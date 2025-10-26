@@ -13,28 +13,46 @@ body {
 }
 
 /* Step indicators - with white background */
+.anvil-flow-panel.anvil-flow-spacing-medium>.anvil-flow-panel-gutter>.anvil-flow-panel-item {
+  margin: 0 4px !important;
+}
 [anvil-role="step-active"] {
-  color: #000000;
+  color: #191919;
+  font-size: 14px !important;
+  font-style: normal;
   font-weight: 700;
-  border-bottom: 3px solid #FFB84D;
-  padding: 12px 20px 8px 20px;
+  line-height: 130%; /* 18.2px */
+  letter-spacing: 0.14px;
+  border: 1px solid #191919;
+  background: #FAFAFA;
+  padding: 4px 16px;
+  width: 215px;
   cursor: pointer;
-  background-color: rgba(255, 255, 255, 0.95);
-  border-radius: 8px 8px 0 0;
 }
 
 [anvil-role="step-inactive"] {
-  color: #666666;
-  font-weight: 400;
+  color: #9FA196;
   cursor: pointer;
-  padding: 12px 20px 8px 20px;
-  background-color: rgba(255, 255, 255, 0.85);
-  border-radius: 8px 8px 0 0;
+  padding: 4px 16px;
+  width: 215px;
+  font-size: 14px !important;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 130%; /* 18.2px */
+  letter-spacing: 0.14px;
+  border: 1px solid rgba(159, 161, 150, 0.30);
 }
 
 [anvil-role="step-inactive"]:hover {
   color: #333333;
   background-color: rgba(255, 255, 255, 0.95);
+}
+
+
+[anvil-name="button_close"] {
+  position: fixed;
+  top: 10px;
+  right: 0;
 }
 
 /* Upload panel */
@@ -48,8 +66,8 @@ body {
   max-width: 500px;
   max-height: 500px;
   aspect-ratio: 1;
-  margin: 20px auto;
-  padding: 40px;
+  margin: 0px auto;
+  padding: 0px;
 }
 
 /* Crop panel */
@@ -78,4 +96,8 @@ canvas {
 [anvil-role="crop-panel"] button {
   margin-top: 15px !important;
   margin-bottom: 5px !important;
+}
+
+#anvil-header {
+  display: none !important;
 }
