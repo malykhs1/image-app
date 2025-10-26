@@ -5,11 +5,12 @@ import anvil.tables as tables
 from anvil.tables import app_tables
 
 import anvil.js
-from anvil.js import get_dom_node, call_js, window
+from anvil.js import window, get_dom_node, call_js
 
 MAX_MB_IMG = 15
 WH_IMG = 625
 CARD_WIDTH = '360px'
+
 
 class Point():
   def __init__(self, x, y, rad, op_id):
@@ -24,10 +25,17 @@ class Create(CreateTemplate):
     # Initialize Anvil components
     self.init_components(**properties)
 
-    # === Register JS bridges ===
-    anvil.js.register_js_callable("set_canvas_ref", self.set_canvas_ref)
-    anvil.js.register_js_callable("file_loader_1_change", self.file_loader_1_change)
-    anvil.js.register_js_callable("button_create_click", self.button_create_click)
+    # === Register JS bridges (universal method) ===
+    try:
+      anvil.js.call_js("anvil.callables.set", "set_canvas_ref", self.set_canvas_ref)
+      anvil.js.call_js("anvil.callables.set", "file_loader_1_change", self.file_loader_1_change)
+      anvil.js.call_js("anvil.callables.set", "button_create_click", self.button_create_click)
+      print("✅ JS callables registered via anvil.callables.set")
+    except Exception as e:
+      print("⚠️ Fallback registration:", e)
+      window.set_canvas_ref = self.set_canvas_ref
+      window.file_loader_1_change = self.file_loader_1_change
+      window.button_create_click = self.button_create_click
 
     # === Initialize state ===
     self.locale = "en"
@@ -47,7 +55,7 @@ class Create(CreateTemplate):
     self.ops_history = []
     self.cvsW = 300
 
-    # Check device type
+    # Detect mobile
     if hasattr(window.navigator, "userAgentData") and window.navigator.userAgentData is not None:
       platform = window.navigator.userAgentData.platform
     else:
@@ -58,12 +66,14 @@ class Create(CreateTemplate):
 
   # === JS bridge: receive canvas reference ===
   def set_canvas_ref(self, js_canvas):
-    self.canvas_1 = anvil.js.wrap_dom_element(js_canvas)
-    print("🎨 Canvas connected successfully:", self.canvas_1)
+    try:
+      self.canvas_1 = anvil.js.wrap_dom_element(js_canvas)
+      print("🎨 Canvas connected successfully:", self.canvas_1)
+    except Exception as e:
+      print("❌ Failed to connect canvas:", e)
 
   # === File upload ===
   def file_loader_1_change(self, file, **event_args):
-    """Called when a file is uploaded via HTML input"""
     print("📁 File received:", file)
     self.file_loaded(file)
 
@@ -73,24 +83,20 @@ class Create(CreateTemplate):
     if file.length < MAX_MB_IMG * 1024 * 1024:
       self.img = file
       print("🖼️ Image loaded successfully")
-      # Здесь можно вызвать drawCanvas, если canvas уже подключён
       if self.canvas_1:
         self.drawCanvas()
     else:
       alert(f"Max size is {MAX_MB_IMG} MB", title="File too large")
 
-  # === Main action (Download / Create Artwork) ===
+  # === Main button ===
   def button_create_click(self, **event_args):
-    """Triggered by 'Download' button"""
     print("🎯 Button 'Create Artwork' clicked")
     if not self.img:
       alert("Please upload an image first!")
       return
+    alert("Simulating artwork creation... (you can call anvil.server.call here)")
 
-    # Эмуляция генерации (в реальном коде вызывался бы anvil.server.call)
-    alert("Simulating artwork creation... (you can call your backend here)")
-
-  # === Example canvas drawing ===
+  # === Draw something on canvas ===
   def drawCanvas(self):
     if not self.canvas_1:
       print("⚠️ Canvas not connected yet")
