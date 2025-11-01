@@ -16,6 +16,7 @@ body {
 .anvil-flow-panel.anvil-flow-spacing-medium>.anvil-flow-panel-gutter>.anvil-flow-panel-item {
   margin: 0 4px !important;
 }
+
 [anvil-role="step-active"] {
   color: #191919;
   font-size: 14px !important;
@@ -100,4 +101,24 @@ canvas {
 
 #anvil-header {
   display: none !important;
+}
+
+
+@media (max-width: 600px) {
+    .anvil-flow-panel.anvil-flow-spacing-medium>.anvil-flow-panel-gutter {
+      margin-left: 3px !important;
+      margin-right: 0 !important;
+      display: grid !important;
+      grid-template-columns: 1fr 1fr !important;
+  }
+
+  [anvil-role="step-inactive"],
+  [anvil-role="step-active"] { 
+    width: 95% !important;
+  }
+
+  .anvil-flow-panel-item:nth-child(3) {
+    grid-column: 1 / span 2 !important; /*$70=<<45B$425$:>?>=>8 */
+    width: 100%;
+  }
 }
