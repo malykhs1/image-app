@@ -346,7 +346,8 @@ def anvil_to_shopify(image_obj, anvil_id, locale, string_len_meters,
     # Publish the product to the online store
     # Получаем правильный Publication ID для Online Store
     try:
-        publications = client.list_publications()
+        publications = client.get_publication_ids()
+        print(f"Available publications: {publications}")
         online_store_pub = None
         for pub_id, pub_name in publications:
             if 'Online Store' in pub_name or 'online' in pub_name.lower():
