@@ -56,8 +56,10 @@ class Creation(CreationTemplate):
       while task.is_completed() is False:
         waitHere = 1
       
+      # Получаем результат: variant_id, anvil_id
       variant_id, anvil_id = task.get_return_value()
       
+      # Отправляем postMessage родительскому окну для добавления в корзину
       send_add_to_cart(variant_id, anvil_id, add_frame)
       
       # Показываем сообщение об успехе

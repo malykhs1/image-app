@@ -82,4 +82,6 @@ def add_to_cart_bg_task(item, locale):
   # create a product and return the product variant
   string_len_meters = int(row['wire_len_km']*1000)
   variant_id = Shopify_API.anvil_to_shopify(row['out_image'], anvil_id, locale, string_len_meters)
+  
+  # Продукт создан как ACTIVE, отправляем variant_id для добавления в корзину через postMessage
   return variant_id, anvil_id

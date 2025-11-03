@@ -120,6 +120,7 @@ class ShopifyClient:
                 "descriptionHtml": f"Made from {string_len_meters} meters of string",
                 "productType": "String Art",
                 "vendor": "Custom String Art",
+                "status": "ACTIVE",
                 "tags": tags,
                 "productOptions": [{
                     "name": "Size",
@@ -352,3 +353,74 @@ def anvil_to_shopify(image_obj, anvil_id, locale, string_len_meters,
     variant_number = variant_id.split('/')[-1]
     
     return variant_number
+
+def add_variant_to_cart(variant_id, quantity=1, shop_domain="mc8hfv-ce.myshopify.com"):
+    """
+    Добавить товар в корзину Shopify через Storefront API
+    Возвращает cart_id и checkout_url
+    """
+    storefront_token = anvil.secrets.get_secret('storefront_access_token')
+    
+    url = f"https://{shop_domain}/api/2024-10/graphql.json"
+    headers = {
+        "Content-Type": "application/json",
+        "X-Shopify-Storefront-Access-Token": storefront_token
+    }
+    
+    # Создаем корзину и добавляем товар
+    mutation = """
+    mutation cartCreate($input: CartInput!) {
+      cartCreate(input: $input) {
+        cart {
+          id
+          checkoutUrl
+          lines(first: 10) {
+            edges {
+              node {
+                id
+                quantity
+                merchandise {
+                  ... on ProductVariant {
+                    id
+                    title
+                    product {
+                      title
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+        userErrors {
+          field
+          message
+        }
+      }
+    }
+    """
+    
+    variables = {
+        "input": {
+            "lines": [
+                {
+                    "merchandiseId": f"gid://shopify/ProductVariant/{variant_id}",
+                    "quantity": quantity
+                }
+            ]
+        }
+    }
+    
+    response = requests.post(url, json={"query": mutation, "variables": variables}, headers=headers)
+    result = response.json()
+    
+    if "errors" in result or result.get("data", {}).get("cartCreate", {}).get("userErrors"):
+        errors = result.get("errors") or result["data"]["cartCreate"]["userErrors"]
+        error_messages = [error.get("message", str(error)) for error in errors]
+        raise ValueError(f"Failed to add to cart: {', '.join(error_messages)}")
+    
+    cart = result["data"]["cartCreate"]["cart"]
+    return {
+        "cart_id": cart["id"],
+        "checkout_url": cart["checkoutUrl"]
+    }
