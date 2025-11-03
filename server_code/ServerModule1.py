@@ -19,6 +19,7 @@ from datetime import datetime
 @anvil.server.callable
 def create(cropped_img, paramsDict, mask_img, img_name):
   """Создание artwork из изображения (временная заглушка)"""
+  print(f"SERVER: create() called for {img_name}")
   session_id = get_session_id()
   
   # ВРЕМЕННО: Пока без обработки - просто сохраняем исходное изображение
@@ -37,6 +38,7 @@ def create(cropped_img, paramsDict, mask_img, img_name):
     created_at=datetime.now()
   )
   
+  print(f"SERVER: Created row with ID {row.get_id()}")
   return row
 
 @anvil.server.callable

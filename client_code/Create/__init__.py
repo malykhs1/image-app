@@ -197,6 +197,13 @@ class Create(CreateTemplate):
 
    ##### CALL SERVER FUNC #####
   def button_create_click(self, **event_args):
+    # Защита от двойного нажатия
+    if hasattr(self, 'is_creating') and self.is_creating:
+      print("Already creating, ignoring duplicate click")
+      return
+    
+    self.is_creating = True
+    
     speedText = "very fast"
     effectIntensity = 2
     effectType = "clahe"
@@ -229,6 +236,7 @@ class Create(CreateTemplate):
       self.linear_progress.visible = False
       self.spacer_progress.visible = False
       self.button_create.visible = True
+      self.is_creating = False  # Разрешаем повторное нажатие после ошибки
       # Telegram отключен
       # anvil.server.call('send_telegram_message','Someone is trying to create and server is down!')
       alert('The server is currently unreachable. Please try again soon.')
@@ -237,10 +245,13 @@ class Create(CreateTemplate):
     self.linear_progress.visible = False
     self.spacer_progress.visible = False
     self.button_create.visible = True
+    self.is_creating = False  # Разрешаем повторное нажатие после завершения
     
     #display results
+    print(f"CLIENT: Adding creation to UI, row ID: {row.get_id()}")
     comp = Creation(locale=self.locale,item=row)
     self.flow_panel_creations.add_component(comp, width=CARD_WIDTH, index=0)
+    print(f"CLIENT: Total creations in UI: {len(self.flow_panel_creations.get_components())}")
     
     # Автоматически переходим к этапу 3 после генерации
     self.set_step(3)
