@@ -119,6 +119,7 @@ class ShopifyClient:
                 "title": title,
                 "descriptionHtml": f"Made from {string_len_meters} meters of string",
                 "productType": "String Art",
+                "vendor": "Custom String Art",
                 "tags": tags,
                 "productOptions": [{
                     "name": "Size",
@@ -154,8 +155,9 @@ class ShopifyClient:
             }
         }
         
+        print("Creating product with variables:", variables)
         result = self._execute_graphql(mutation, variables)
-        print(result)
+        print("Shopify response:", result)
         if 'errors' in result:
           user_errors = result['errors']
           error_messages = [error["message"] for error in user_errors]
