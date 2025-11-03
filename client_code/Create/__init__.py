@@ -89,6 +89,10 @@ class Create(CreateTemplate):
     self.drawCanvas()
     self.setup_drag_and_drop()
     
+    # Очищаем старые creations (если есть)
+    for comp in self.flow_panel_creations.get_components():
+      comp.remove_from_parent()
+    
     # Устанавливаем начальный этап
     self.set_step(1)
 
@@ -99,6 +103,8 @@ class Create(CreateTemplate):
   # Методы управления этапами
   def set_step(self, step):
     """Переключение между этапами"""
+    print(f"CLIENT: set_step({step}) called")
+    print(f"CLIENT: Creations in flow_panel before set_step: {len(self.flow_panel_creations.get_components())}")
     self.current_step = step
     
     # Скрываем все панели
@@ -197,12 +203,16 @@ class Create(CreateTemplate):
 
    ##### CALL SERVER FUNC #####
   def button_create_click(self, **event_args):
+    print(f"CLIENT: button_create_click called")
+    print(f"CLIENT: Current creations in UI BEFORE: {len(self.flow_panel_creations.get_components())}")
+    
     # Защита от двойного нажатия
     if hasattr(self, 'is_creating') and self.is_creating:
-      print("Already creating, ignoring duplicate click")
+      print("CLIENT: Already creating, ignoring duplicate click")
       return
     
     self.is_creating = True
+    print("CLIENT: Starting creation process...")
     
     speedText = "very fast"
     effectIntensity = 2
@@ -229,8 +239,10 @@ class Create(CreateTemplate):
     self.spacer_progress.visible = True
     self.button_create.visible = False
     ############# call SERVER function ################
+    print(f"CLIENT: Calling server create() for {self.img.name}")
     try:
       row = anvil.server.call('create',cropped_img,paramsDict,mask_img,self.img.name) #nLines,resMediaImg
+      print(f"CLIENT: Server returned row with ID: {row.get_id()}")
     except Exception as e:
       print(e)
       self.linear_progress.visible = False
