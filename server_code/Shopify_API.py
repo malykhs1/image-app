@@ -344,8 +344,24 @@ def anvil_to_shopify(image_obj, anvil_id, locale, string_len_meters,
     client.register_translations(product_id, string_len_meters) 
 
     # Publish the product to the online store
-    # ВРЕМЕННО ОТКЛЮЧЕНО: публикацию нужно делать вручную или найти правильный Publication ID
-    # client.publish_product(product_id)
+    # Получаем правильный Publication ID для Online Store
+    try:
+        publications = client.list_publications()
+        online_store_pub = None
+        for pub_id, pub_name in publications:
+            if 'Online Store' in pub_name or 'online' in pub_name.lower():
+                online_store_pub = pub_id
+                break
+        
+        if online_store_pub:
+            # Обновляем ID публикации и публикуем
+            client.online_store_publication_id = online_store_pub
+            client.publish_product(product_id)
+            print(f"Published to: {online_store_pub}")
+        else:
+            print("Warning: Online Store publication not found")
+    except Exception as e:
+        print(f"Publishing warning: {e}")
 
     client.wait_for_product_image_ready(product_id)
   

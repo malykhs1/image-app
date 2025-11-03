@@ -18,7 +18,18 @@ def send_add_to_cart(variant_id, anvil_id, add_frame):
              'add_frame': add_frame,
              'frame_id': frame_variant,
             }
+  print(f"Sending postMessage: {message}")
   anvil.js.window.parent.postMessage(message, '*')
+  
+  # Также попробуем добавить напрямую через Shopify Cart API (если приложение встроено в магазин)
+  try:
+    # Формируем URL для добавления в корзину Shopify
+    cart_url = f"/cart/add?id={variant_id}&quantity=1"
+    print(f"Cart URL: {cart_url}")
+    # Отправляем команду родительскому окну для перехода
+    anvil.js.call_js('addToCartRedirect', variant_id)
+  except Exception as e:
+    print(f"Direct cart add failed: {e}")
 
 class Creation(CreationTemplate):
   def __init__(self, locale, **properties):
@@ -59,11 +70,21 @@ class Creation(CreationTemplate):
       # Получаем результат: variant_id, anvil_id
       variant_id, anvil_id = task.get_return_value()
       
+      print(f"Received variant_id: {variant_id}, anvil_id: {anvil_id}")
+      
       # Отправляем postMessage родительскому окну для добавления в корзину
       send_add_to_cart(variant_id, anvil_id, add_frame)
       
-      # Показываем сообщение об успехе
-      alert("Product added to cart successfully!", title="Success")
+      # Прямое перенаправление на добавление в корзину Shopify
+      shop_domain = "mc8hfv-ce.myshopify.com"
+      cart_add_url = f"https://{shop_domain}/cart/add?id={variant_id}&quantity=1"
+      
+      # Показываем сообщение и перенаправляем
+      if confirm("Product created! Add to cart and go to checkout?"):
+        # Перенаправляем родительское окно на добавление в корзину
+        anvil.js.window.parent.location.href = cart_add_url
+      else:
+        alert("Product created successfully!", title="Success")
       
     except Exception as e:
       print(f"Error adding to cart: {e}")
