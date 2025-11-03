@@ -661,20 +661,26 @@ class Create(CreateTemplate):
     self.text_box_brush_size.visible = not self.text_box_brush_size.visible
 
   def timer_1_tick(self, **event_args):
-    with anvil.server.no_loading_indicator:
-      if self.task is not None:
-        if self.task.is_completed():
-          my_creations = self.task.get_return_value()
-          self.refresh_creations(my_creations)
-          self.task = None
-          self.timer_1.interval = 0
+    # ОТКЛЮЧЕНО: автоматическая загрузка старых creations
+    # Это вызывало дубликаты - загружались старые изображения из БД
+    pass
+    # with anvil.server.no_loading_indicator:
+    #   if self.task is not None:
+    #     if self.task.is_completed():
+    #       my_creations = self.task.get_return_value()
+    #       self.refresh_creations(my_creations)
+    #       self.task = None
+    #       self.timer_1.interval = 0
 
   def timer_0_tick(self, **event_args):
-    self.task = None
-    with anvil.server.no_loading_indicator:
-      self.timer_0.interval = 0
-      self.task = anvil.server.call_s('launch_bg_get_creations')
-      self.timer_1.interval = 0.5
+    # ОТКЛЮЧЕНО: автоматическая загрузка старых creations
+    # Это вызывало дубликаты - загружались старые изображения из БД
+    pass
+    # self.task = None
+    # with anvil.server.no_loading_indicator:
+    #   self.timer_0.interval = 0
+    #   self.task = anvil.server.call_s('launch_bg_get_creations')
+    #   self.timer_1.interval = 0.5
 
  
 
