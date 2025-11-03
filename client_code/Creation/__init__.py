@@ -27,23 +27,8 @@ def send_add_to_cart(variant_id, anvil_id, add_frame):
   print(f"Sending postMessage to parent window: {message}")
   anvil.js.window.parent.postMessage(message, '*')
   
-  # 2. Открываем страницу добавления в корзину в родительском окне
-  try:
-    shop_domain = "mc8hfv-ce.myshopify.com"
-    
-    # Формируем URL для добавления в корзину
-    cart_url = f"https://{shop_domain}/cart/add?id={variant_id}&quantity=1"
-    
-    # Если нужна рамка, добавляем её к URL
-    if add_frame:
-      cart_url += f"&id={frame_variant}&quantity=1"
-    
-    print(f"Opening cart URL: {cart_url}")
-    
-    # Пытаемся открыть в родительском окне через _top (обходим CORS)
-    anvil.js.window.open(cart_url, "_top")
-  except Exception as e:
-    print(f"Window open error: {e}")
+  # postMessage отправлено - родительское окно должно обработать его
+  # и открыть cart-drawer автоматически
 
 class Creation(CreationTemplate):
   def __init__(self, locale, **properties):
