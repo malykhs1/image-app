@@ -118,6 +118,7 @@ class ShopifyClient:
             "productSet": {
                 "title": title,
                 "descriptionHtml": f"Made from {string_len_meters} meters of string",
+                "productType": "String Art",
                 "tags": tags,
                 "productOptions": [{
                     "name": "Size",
