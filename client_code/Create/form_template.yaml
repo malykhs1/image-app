@@ -110,6 +110,38 @@ components:
   properties: {align: center, spacing: medium, spacing_above: small, spacing_below: small}
   type: FlowPanel
 container:
-  properties: {html: ''}
+  properties: 
+    html: |
+      <script>
+      // Функция для добавления товара в корзину Shopify
+      window.addToShopifyCart = function(shopDomain, items) {
+        console.log('Adding to Shopify cart:', items);
+        
+        // Формируем данные для Shopify Cart API
+        const formData = {
+          items: items
+        };
+        
+        // Отправляем запрос на добавление в корзину
+        fetch(`https://${shopDomain}/cart/add.js`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(formData)
+        })
+        .then(response => response.json())
+        .then(data => {
+          console.log('Added to cart successfully:', data);
+          // Обновляем корзину на родительской странице
+          if (window.parent && window.parent !== window) {
+            window.parent.postMessage({action: 'cart_updated'}, '*');
+          }
+        })
+        .catch(error => {
+          console.error('Error adding to cart:', error);
+        });
+      };
+      </script>
   type: HtmlTemplate
 is_package: true

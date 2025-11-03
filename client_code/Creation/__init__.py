@@ -9,9 +9,10 @@ from ..AddFramePopup import AddFramePopup
 WH_IMG_CARD = 350
 
 def send_add_to_cart(variant_id, anvil_id, add_frame):
-  """Отправляем postMessage родительскому окну для добавления товара в корзину"""
+  """Добавляем товар в корзину Shopify"""
   frame_variant = 43092453359731 # product id 8003777167475
   
+  # 1. Отправляем postMessage родительскому окну (для совместимости)
   message = {
     'sender': "https://poy3xlkm3h3flba5.anvil.app",
     'action': 'add',
@@ -20,9 +21,25 @@ def send_add_to_cart(variant_id, anvil_id, add_frame):
     'add_frame': add_frame,
     'frame_id': frame_variant,
   }
-  
   print(f"Sending postMessage to parent window: {message}")
   anvil.js.window.parent.postMessage(message, '*')
+  
+  # 2. Прямое добавление через Shopify Cart API
+  try:
+    shop_domain = "mc8hfv-ce.myshopify.com"
+    
+    # Создаем список товаров для добавления
+    items = [{"id": int(variant_id), "quantity": 1}]
+    
+    # Если нужна рамка, добавляем её тоже
+    if add_frame:
+      items.append({"id": int(frame_variant), "quantity": 1})
+    
+    # Вызываем JavaScript функцию для добавления в корзину
+    anvil.js.call_js('addToShopifyCart', shop_domain, items)
+    print(f"Added to cart via JS: {items}")
+  except Exception as e:
+    print(f"Direct cart add error: {e}")
 
 class Creation(CreationTemplate):
   def __init__(self, locale, **properties):
