@@ -14,7 +14,7 @@ def send_add_to_cart(variant_id, anvil_id, add_frame):
   
   # 1. Отправляем postMessage родительскому окну (для совместимости)
   message = {
-    'sender': "https://poy3xlkm3h3flba5.anvil.app",
+    'sender': "https://neat-reckless-big.anvil.app",
     'action': 'add',
     'variant_id': int(variant_id),
     'anvil_id': anvil_id,
@@ -24,22 +24,23 @@ def send_add_to_cart(variant_id, anvil_id, add_frame):
   print(f"Sending postMessage to parent window: {message}")
   anvil.js.window.parent.postMessage(message, '*')
   
-  # 2. Прямое добавление через Shopify Cart API
+  # 2. Прямое добавление через перенаправление на /cart/add
   try:
     shop_domain = "mc8hfv-ce.myshopify.com"
     
-    # Создаем список товаров для добавления
-    items = [{"id": int(variant_id), "quantity": 1}]
+    # Формируем URL для добавления в корзину
+    cart_url = f"https://{shop_domain}/cart/add?id={variant_id}&quantity=1"
     
-    # Если нужна рамка, добавляем её тоже
+    # Если нужна рамка, добавляем её к URL
     if add_frame:
-      items.append({"id": int(frame_variant), "quantity": 1})
+      cart_url += f"&id={frame_variant}&quantity=1"
     
-    # Вызываем JavaScript функцию для добавления в корзину
-    anvil.js.call_js('addToShopifyCart', shop_domain, items)
-    print(f"Added to cart via JS: {items}")
+    print(f"Redirecting parent to: {cart_url}")
+    
+    # Перенаправляем родительское окно
+    anvil.js.window.parent.location.href = cart_url
   except Exception as e:
-    print(f"Direct cart add error: {e}")
+    print(f"Redirect error: {e}")
 
 class Creation(CreationTemplate):
   def __init__(self, locale, **properties):
