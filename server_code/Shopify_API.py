@@ -321,7 +321,7 @@ class ShopifyClient:
         return [(edge["node"]["id"], edge["node"]["name"]) for edge in publications]
 
 def anvil_to_shopify(image_obj, anvil_id, locale, string_len_meters,
-                     shop_domain="hmc8hfv-ce.myshopify.com",
+                     shop_domain="mc8hfv-ce.myshopify.com",
                      online_store_publication="gid://shopify/Publication/128141623411"):
     """Main function to create a Shopify product from an Anvil image."""
     admin_token = anvil.secrets.get_secret('admin_API_token')
