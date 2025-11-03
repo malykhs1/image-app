@@ -44,21 +44,32 @@ class Creation(CreationTemplate):
     self.linear_progress_cart.visible = True
     self.spacer_bottom.visible = True
     self.button_add_to_cart.visible = False
-    task = anvil.server.call_s('launch_add_to_cart_task', self.item, self.locale)
+    
+    try:
+      task = anvil.server.call_s('launch_add_to_cart_task', self.item, self.locale)
 
-    get_open_form().file_loader_1.scroll_into_view()
-    popup = AddFramePopup(locale=self.locale)
-    add_frame = alert(content=popup, large=True,buttons=[])
-    if add_frame is None:
-      add_frame = False
-    while task.is_completed() is False:
-      waitHere = 1
+      popup = AddFramePopup(locale=self.locale)
+      add_frame = alert(content=popup, large=True, buttons=[])
+      if add_frame is None:
+        add_frame = False
+      
+      while task.is_completed() is False:
+        waitHere = 1
+      
+      variant_id, anvil_id = task.get_return_value()
+      
+      send_add_to_cart(variant_id, anvil_id, add_frame)
+      
+      # Показываем сообщение об успехе
+      alert("Product added to cart successfully!", title="Success")
+      
+    except Exception as e:
+      print(f"Error adding to cart: {e}")
+      alert(f"Failed to add product to cart: {str(e)}", title="Error")
     
-    variant_id, anvil_id = task.get_return_value()
-    
-    send_add_to_cart(variant_id, anvil_id, add_frame)
-    self.button_add_to_cart.visible = True
-    self.linear_progress_cart.visible = False
-    self.spacer_bottom.visible = False
+    finally:
+      self.button_add_to_cart.visible = True
+      self.linear_progress_cart.visible = False
+      self.spacer_bottom.visible = False
 
     
