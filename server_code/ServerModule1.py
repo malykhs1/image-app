@@ -71,13 +71,10 @@ def launch_add_to_cart_task(item, locale):
 @anvil.server.background_task
 def add_to_cart_bg_task(item, locale):
   # Конвертируем row объект в словарь для создания новой записи
+  # Включаем только поля, которые существуют в таблице cart_added
   item_dict = {
-    'session_id': item['session_id'],
-    'in_image': item['in_image'],
     'out_image': item['out_image'],
-    'out_image_medium': item['out_image_medium'],
-    'wire_len_km': item['wire_len_km'],
-    'created_at': item['created_at']
+    'wire_len_km': item['wire_len_km']
   }
   
   row = app_tables.cart_added.add_row(**item_dict)
