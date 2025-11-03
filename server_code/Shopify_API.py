@@ -343,7 +343,8 @@ def anvil_to_shopify(image_obj, anvil_id, locale, string_len_meters,
     client.register_translations(product_id, string_len_meters) 
 
     # Publish the product to the online store
-    client.publish_product(product_id)
+    # ВРЕМЕННО ОТКЛЮЧЕНО: публикацию нужно делать вручную или найти правильный Publication ID
+    # client.publish_product(product_id)
 
     client.wait_for_product_image_ready(product_id)
   
