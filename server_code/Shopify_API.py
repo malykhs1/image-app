@@ -136,11 +136,13 @@ class ShopifyClient:
                 "metafields": [{
                     "namespace": "seo",
                     "key": "hidden",
+                    "type": "single_line_text_field",
                     "value": "1",
                   },
                   {
                     "namespace": "anvil",
                     "key": "id",
+                    "type": "single_line_text_field",
                     "value": anvil_id
                   }],
                 "variants": [
