@@ -14,7 +14,7 @@ def send_add_to_cart(variant_id, anvil_id, add_frame):
   
   # 1. Отправляем postMessage родительскому окну (для совместимости)
   message = {
-    'sender': "https://neat-reckless-big.anvil.app",
+    'sender': "https://poy3xlkm3h3flba5.anvil.app",
     'action': 'add',
     'variant_id': int(variant_id),
     'anvil_id': anvil_id,
