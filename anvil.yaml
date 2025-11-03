@@ -78,6 +78,9 @@ secrets:
   admin_API_token:
     type: secret
     value: {POY3XLKM3H3FLBA5: qNC/gOo88NQvhNtpIfYumRr9aEPhdkC4q+w8LiB+3GqJRhYk1VTVMbd1Tq7tLKI+4+pcD3wtjbtTMiTIyIHsMpnRk/hM8bDBrGdduoAg2Txv4nPC52NY3ZnXruIYMiPCMCMkGgkiQNi8Vys0waGqMNiN+MDrmhR+jciUABRzHlawM5gZjw==, VRZY3QEQXLREOV3B: 7BFo9unDEJ5dnHKI9UOHymAvuIBqgbswwRMV+yZ74fTfoSihSx36j2A6aHm60ULrl00SUNT+gWwk/EV4q52CK0+EJWBafDIOQKLXsgqJBGJtlG7qlFYaEZk92h5XxJs0sP1iw/7J3dN+lmFBgVtceqh/QehQS6Iqb+q44aU4FBZZ3924gw==}
+  storefront_access_token:
+    type: secret
+    value: {VRZY3QEQXLREOV3B: ''}
 services:
 - client_config: {enable_v2: true}
   server_config: {}
