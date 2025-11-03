@@ -12,9 +12,12 @@ def send_add_to_cart(variant_id, anvil_id, add_frame):
   """Добавляем товар в корзину Shopify"""
   frame_variant = 43092453359731 # product id 8003777167475
   
+  # Получаем текущий URL приложения динамически
+  app_origin = anvil.server.get_app_origin()
+  
   # 1. Отправляем postMessage родительскому окну (для совместимости)
   message = {
-    'sender': "https://poy3xlkm3h3flba5.anvil.app",
+    'sender': app_origin,  # Динамический URL приложения
     'action': 'add',
     'variant_id': int(variant_id),
     'anvil_id': anvil_id,
@@ -24,7 +27,7 @@ def send_add_to_cart(variant_id, anvil_id, add_frame):
   print(f"Sending postMessage to parent window: {message}")
   anvil.js.window.parent.postMessage(message, '*')
   
-  # 2. Прямое добавление через перенаправление на /cart/add
+  # 2. Открываем страницу добавления в корзину в родительском окне
   try:
     shop_domain = "mc8hfv-ce.myshopify.com"
     
@@ -35,12 +38,12 @@ def send_add_to_cart(variant_id, anvil_id, add_frame):
     if add_frame:
       cart_url += f"&id={frame_variant}&quantity=1"
     
-    print(f"Redirecting parent to: {cart_url}")
+    print(f"Opening cart URL: {cart_url}")
     
-    # Перенаправляем родительское окно
-    anvil.js.window.parent.location.href = cart_url
+    # Пытаемся открыть в родительском окне через _top (обходим CORS)
+    anvil.js.window.open(cart_url, "_top")
   except Exception as e:
-    print(f"Redirect error: {e}")
+    print(f"Window open error: {e}")
 
 class Creation(CreationTemplate):
   def __init__(self, locale, **properties):
