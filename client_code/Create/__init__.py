@@ -103,7 +103,7 @@ class Create(CreateTemplate):
 
       print("📡 Calling backend...")
       row = anvil.server.call('create', cropped_img, paramsDict, mask_img, getattr(self.img, "name", "uploaded.jpg"))
-      print("✅ Product created successfully in Shopify!")
+      print("✅ Product created ssuccessfully in Shopify!")
       alert("Product created successfully!")
 
       # Если хочешь — здесь можно показать превью / добавить в список
