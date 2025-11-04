@@ -167,7 +167,7 @@ class ShopifyClient:
       print(error_messages)
       raise ValueError(f"Product creation failed: {', '.join(error_messages)}")
 
-      # Check for user errors
+    # Check for user errors
     user_errors = result["data"]["productSet"]["userErrors"]
     if user_errors:
       error_messages = [error["message"] for error in user_errors]

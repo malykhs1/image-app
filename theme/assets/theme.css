@@ -144,7 +144,7 @@ canvas {
   display: none !important;
 }
 
-/* Zoom buttons -$557$>D4=652>7>$D>=0 */
+/* Zoom buttons - без оранжевого фона */
 [name="button_plus"],
 [name="button_minus"] {
   background: transparent !important;
@@ -159,7 +159,7 @@ canvas {
   box-shadow: none !important;
 }
 
-/* Close button -$157 >D0=656>3>$D>=0 */
+/* Close button - без оранжевого фона */
 [name="button_close"] {
   background: transparent !important;
   color: #666666 !important;
@@ -174,7 +174,7 @@ canvas {
   box-shadow: none !important;
 }
 
-/* Result card - 557$D>=0 8$157 D4<>8 */
+/* Result card - без фона и без рамки */
 .anvil-component[data-anvil-name="card_1"],
 .anvil-component[data-anvil-name="card_1"] .anvil-m3-card,
 .anvil-component[data-anvil-name="card_1"] > * {
@@ -185,7 +185,7 @@ canvas {
   outline: none !important;
 }
 
-/*$#5<@45<$55?O9$D>=$C$6A5E >4@F>G5: D57G?LF4B0 */
+/* Убираем белый фон у всех карточек результата */
 .anvil-m3-card {
   background: transparent !important;
   border: none !important;

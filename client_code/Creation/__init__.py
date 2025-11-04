@@ -26,6 +26,9 @@ def send_add_to_cart(variant_id, anvil_id, add_frame):
   }
   print(f"Sending postMessage to parent window: {message}")
   anvil.js.window.parent.postMessage(message, '*')
+  
+  # postMessage отправлено - родительское окно должно обработать его
+  # и открыть cart-drawer автоматически
 
   # postMessage отправлено - родительское окно должно обработать его
   # и открыть cart-drawer автоматически
@@ -82,4 +85,3 @@ class Creation(CreationTemplate):
       self.button_add_to_cart.visible = True
       self.linear_progress_cart.visible = False
       self.spacer_bottom.visible = False
-
