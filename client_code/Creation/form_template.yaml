@@ -6,19 +6,30 @@ components:
         name: spacer_1
         properties: {height: '0'}
         type: Spacer
+      - layout_properties: {grid_position: 'QDODGV,PYZCFX'}
+        name: label_close
+        properties:
+          align: right
+          bold: true
+          font_size: 24
+          icon: 'fa:times-circle'
+          spacing:
+            margin: [null, '0', null, null]
+            padding: [null, '0', null, '0']
+          text: ''
+          visible: true
+        type: Label
       - event_bindings: {click: link_delete_click}
         layout_properties: {grid_position: 'QDODGV,PYZCFX'}
         name: link_delete
         properties:
           align: right
-          bold: true
           font_family: Montserrat
-          font_size: 12
-          italic: false
+          font_size: 10
           spacing:
             margin: [null, '0', null, null]
             padding: [null, '0', null, '0']
-          text: X
+          text: CLOSE
           underline: false
           visible: true
         type: form:dep_lin1x4oec0ytd:_Components.Link
