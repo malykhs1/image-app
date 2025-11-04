@@ -30,7 +30,7 @@ class Create(CreateTemplate):
     self.brush_size = 10
     # Set Form properties and Data Bindings.
     self.init_components(**properties)
-    
+
     # Check if userAgentData is available
     if hasattr(navigator, "userAgentData") and navigator.userAgentData is not None:
       platform = navigator.userAgentData.platform
@@ -88,7 +88,11 @@ class Create(CreateTemplate):
     self.canvas_1.visible = False  # Скрываем canvas до загрузки изображения
     self.drawCanvas()
     self.setup_drag_and_drop()
-    
+
+    # Очищаем старые creations (если есть)
+    for comp in self.flow_panel_creations.get_components():
+      comp.remove_from_parent()
+
     # Устанавливаем начальный этап
     self.set_step(1)
 
@@ -99,13 +103,15 @@ class Create(CreateTemplate):
   # Методы управления этапами
   def set_step(self, step):
     """Переключение между этапами"""
+    print(f"CLIENT: set_step({step}) called")
+    print(f"CLIENT: Creations in flow_panel before set_step: {len(self.flow_panel_creations.get_components())}")
     self.current_step = step
-    
+
     # Скрываем все панели
     self.step1_panel.visible = False
     self.step2_panel.visible = False
     self.flow_panel_creations.visible = False
-    
+
     # Обновляем индикаторы этапов
     self.step_indicator_1.role = 'step-inactive'
     self.step_indicator_1.bold = False
@@ -113,7 +119,7 @@ class Create(CreateTemplate):
     self.step_indicator_2.bold = False
     self.step_indicator_3.role = 'step-inactive'
     self.step_indicator_3.bold = False
-    
+
     # Показываем нужную панель и активируем индикатор
     if step == 1:
       self.step1_panel.visible = True
@@ -126,6 +132,7 @@ class Create(CreateTemplate):
       self.step_indicator_2.bold = True
       self.button_close.visible = True
       self.canvas_1.visible = True
+      self.flow_panel_canvas.visible = True  # Показываем canvas panel
       self.flow_panel_zoom.visible = True
       self.button_create.visible = True
       self.drawCanvas()
@@ -133,7 +140,11 @@ class Create(CreateTemplate):
       self.flow_panel_creations.visible = True
       self.step_indicator_3.role = 'step-active'
       self.step_indicator_3.bold = True
-      self.button_close.visible = False
+      self.button_close.visible = True
+      # Скрываем canvas и элементы управления на этапе 3
+      self.flow_panel_canvas.visible = False
+      self.flow_panel_zoom.visible = False
+      self.button_create.visible = False
 
   def step_indicator_1_click(self, **event_args):
     """Переход к этапу 1"""
@@ -150,16 +161,22 @@ class Create(CreateTemplate):
       self.set_step(3)
 
   def button_close_click(self, **event_args):
-    """Закрытие и возврат к этапу 1"""
-    self.img = None
-    self.resetMoveAndZoom()
-    self.canvas_1.visible = False
-    self.set_step(1)
+    """Закрытие: на 3-м этапе -> к этапу 2, на 2-м этапе -> к этапу 1"""
+    print(f"CLIENT: button_close_click, current_step={self.current_step}")
+    if self.current_step == 3:
+      # С третьего этапа возвращаемся ко второму
+      self.set_step(2)
+    else:
+      # Со второго этапа возвращаемся к первому и сбрасываем изображение
+      self.img = None
+      self.resetMoveAndZoom()
+      self.canvas_1.visible = False
+      self.set_step(1)
 
   def setup_drag_and_drop(self):
     drop_panel_node = get_dom_node(self.flow_panel_canvas)
     call_js("setUpListeners", drop_panel_node)
-  
+
   def refresh_creations(self, my_creations):
     #my_creations = anvil.server.call('get_my_creations')
     for comp in self.flow_panel_creations.get_components():
@@ -174,10 +191,10 @@ class Create(CreateTemplate):
       self.file_loaded(dropped_file)
     else:
       alert("File must be an image!")
-  
+
   def file_loader_1_change(self, file, **event_args):
     self.file_loaded(file)
-    
+
   def file_loaded(self,file):
     """This method is called when a new file is loaded into this FileLoader"""
     if file is None:
@@ -193,10 +210,21 @@ class Create(CreateTemplate):
       self.set_step(2)
     else:
       alert(f"Maximal size is {MAX_MB_IMG} MB",title="File size too large",large=True,dismissible=False)
-    
 
-   ##### CALL SERVER FUNC #####
+
+  ##### CALL SERVER FUNC #####
   def button_create_click(self, **event_args):
+    print(f"CLIENT: button_create_click called")
+    print(f"CLIENT: Current creations in UI BEFORE: {len(self.flow_panel_creations.get_components())}")
+
+    # Защита от двойного нажатия
+    if hasattr(self, 'is_creating') and self.is_creating:
+      print("CLIENT: Already creating, ignoring duplicate click")
+      return
+
+    self.is_creating = True
+    print("CLIENT: Starting creation process...")
+
     speedText = "very fast"
     effectIntensity = 2
     effectType = "clahe"
@@ -204,31 +232,34 @@ class Create(CreateTemplate):
     mask_img = None
     cloth = False
     discDiam = 400
-    
+
     #sub-rect of image we want to run on (l,t,r,b)
     zoom = self.zoom + self.dz
     left = round(self.sx+self.dx)
     top = round(self.sy+self.dy)
     right = left + int(self.minWH*zoom)
     bot = top + int(self.minWH*zoom)
-    
+
     subRect = (left,top,right,bot)
     cropped_img = self.get_cropped_img()
-    
+
     paramsDict = {"speedText": speedText, "effectType": effectType, "effectIntensity": effectIntensity,
-                 "cloth": cloth, "noMask": noMask, "subRect": subRect, "discDiam": discDiam}
+                  "cloth": cloth, "noMask": noMask, "subRect": subRect, "discDiam": discDiam}
 
     self.linear_progress.visible = True
     self.spacer_progress.visible = True
     self.button_create.visible = False
     ############# call SERVER function ################
+    print(f"CLIENT: Calling server create() for {self.img.name}")
     try:
       row = anvil.server.call('create',cropped_img,paramsDict,mask_img,self.img.name) #nLines,resMediaImg
+      print(f"CLIENT: Server returned row with ID: {row.get_id()}")
     except Exception as e:
       print(e)
       self.linear_progress.visible = False
       self.spacer_progress.visible = False
       self.button_create.visible = True
+      self.is_creating = False  # Разрешаем повторное нажатие после ошибки
       # Telegram отключен
       # anvil.server.call('send_telegram_message','Someone is trying to create and server is down!')
       alert('The server is currently unreachable. Please try again soon.')
@@ -237,14 +268,17 @@ class Create(CreateTemplate):
     self.linear_progress.visible = False
     self.spacer_progress.visible = False
     self.button_create.visible = True
-    
+    self.is_creating = False  # Разрешаем повторное нажатие после завершения
+
     #display results
+    print(f"CLIENT: Adding creation to UI, row ID: {row.get_id()}")
     comp = Creation(locale=self.locale,item=row)
     self.flow_panel_creations.add_component(comp, width=CARD_WIDTH, index=0)
-    
+    print(f"CLIENT: Total creations in UI: {len(self.flow_panel_creations.get_components())}")
+
     # Автоматически переходим к этапу 3 после генерации
     self.set_step(3)
-    
+
     #on mobile - scroll to the result
     if self.is_mobile:
       anvil.js.window.setTimeout(lambda: comp.scroll_into_view(), 100)
@@ -277,8 +311,8 @@ class Create(CreateTemplate):
     self.check_box_cloth.visible = is_auto
     self.check_box_1.visible = is_auto
 
-################# CANVAS #######################################################################################################
-  
+  ################# CANVAS #######################################################################################################
+
 
   def resetMoveAndZoom(self):
     self.sx = 0
@@ -297,14 +331,14 @@ class Create(CreateTemplate):
     # Reset and clear the canvas
     self.canvas_1.global_composite_operation = "source-over"
     self.canvas_1.clear_rect(0,0,self.canvas_1.get_width(), self.canvas_1.get_height())
-    
+
     if self.img is None:
       self.canvas_1.draw_image_part(self.up_image_obj,0,0,1024,1024,
                                     0,0,self.canvas_1.width,self.canvas_1.height)
     else:
       zoom = self.zoom + self.dz
       #self.canvas_1.global_alpha = 1
-      
+
       #background image
       self.canvas_1.draw_image_part(self.img,self.sx+self.dx,self.sy+self.dy,self.minWH*zoom,self.minWH*zoom,
                                     0,0,self.canvas_1.width,self.canvas_1.height)
@@ -316,7 +350,7 @@ class Create(CreateTemplate):
         self.canvas_1.arc(point.x,point.y,point.rad)
         self.canvas_1.fill_style = 'red'
         self.canvas_1.fill()
-      
+
       #mask only inside big circle
       # For compositing reference, see: https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/globalCompositeOperation
       self.canvas_1.global_composite_operation = "destination-in"
@@ -638,20 +672,26 @@ class Create(CreateTemplate):
     self.text_box_brush_size.visible = not self.text_box_brush_size.visible
 
   def timer_1_tick(self, **event_args):
-    with anvil.server.no_loading_indicator:
-      if self.task is not None:
-        if self.task.is_completed():
-          my_creations = self.task.get_return_value()
-          self.refresh_creations(my_creations)
-          self.task = None
-          self.timer_1.interval = 0
+    # ОТКЛЮЧЕНО: автоматическая загрузка старых creations
+    # Это вызывало дубликаты - загружались старые изображения из БД
+    pass
+    # with anvil.server.no_loading_indicator:
+    #   if self.task is not None:
+    #     if self.task.is_completed():
+    #       my_creations = self.task.get_return_value()
+    #       self.refresh_creations(my_creations)
+    #       self.task = None
+    #       self.timer_1.interval = 0
 
   def timer_0_tick(self, **event_args):
-    self.task = None
-    with anvil.server.no_loading_indicator:
-      self.timer_0.interval = 0
-      self.task = anvil.server.call_s('launch_bg_get_creations')
-      self.timer_1.interval = 0.5
+    # ОТКЛЮЧЕНО: автоматическая загрузка старых creations
+    # Это вызывало дубликаты - загружались старые изображения из БД
+    pass
+    # self.task = None
+    # with anvil.server.no_loading_indicator:
+    #   self.timer_0.interval = 0
+    #   self.task = anvil.server.call_s('launch_bg_get_creations')
+    #   self.timer_1.interval = 0.5
 
  
 
