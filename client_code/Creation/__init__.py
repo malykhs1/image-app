@@ -10,7 +10,7 @@ WH_IMG_CARD = 350
 
 def send_add_to_cart(variant_id, anvil_id, add_frame):
   """Добавляем товар в корзину Shopify"""
-  frame_variant = 43092453359731 # product id 8003777167475
+  frame_variant = 43092453359731
 
   # Получаем текущий URL приложения динамически
   app_origin = anvil.server.get_app_origin()
