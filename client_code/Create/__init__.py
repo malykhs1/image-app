@@ -365,7 +365,7 @@ class Create(CreateTemplate):
         self.canvas_1.begin_path()
         self.canvas_1.arc(point.x,point.y,point.rad)
         self.canvas_1.fill()
-        
+
       #large circle stroke (blue)
       self.canvas_1.global_composite_operation = "source-over"
       self.canvas_1.begin_path()
@@ -373,7 +373,7 @@ class Create(CreateTemplate):
       self.canvas_1.stroke_style = "#1f1f1f" # "#2196F3"
       self.canvas_1.line_width = 1
       self.canvas_1.stroke()
-      
+
       #small pointer circle stroke (white-difference)
       if self.pointer_xy is not None and (self.erase_mode or self.enhance_mode):
         self.canvas_1.global_composite_operation = "difference"
@@ -382,7 +382,7 @@ class Create(CreateTemplate):
         self.canvas_1.stroke_style = 'white'
         self.canvas_1.line_width = 1
         self.canvas_1.stroke()
-        
+
       self.canvas_1.global_composite_operation = "source-over"
 
   def get_cropped_img(self):
@@ -391,19 +391,19 @@ class Create(CreateTemplate):
     self.canvas_1.width = new_size
     self.canvas_1.reset_context()
     self.canvas_1.clear_rect(0,0,self.canvas_1.get_width(), self.canvas_1.get_height())
-    
+
     self.canvas_1.global_composite_operation = "source-over"
     zoom = self.zoom + self.dz
     self.canvas_1.draw_image_part(self.img,self.sx+self.dx,self.sy+self.dy,self.minWH*zoom,self.minWH*zoom,
                                   0,0,self.canvas_1.width,self.canvas_1.height)
     cropped_img = self.canvas_1.get_image()
-    
+
     self.canvas_1.height = self.cvsW
     self.canvas_1.width = self.cvsW
     self.canvas_1.reset_context()
     self.drawCanvas()
     return cropped_img
-    
+
   def generate_mask_img(self):
     #erase
     self.canvas_1.global_composite_operation = "source-over"
@@ -422,7 +422,7 @@ class Create(CreateTemplate):
       self.canvas_1.begin_path()
       self.canvas_1.arc(point.x,point.y,point.rad)
       self.canvas_1.fill()
-    
+
     # fill erased with black
     self.canvas_1.global_composite_operation = "source-over"
     self.canvas_1.fill_style = 'black'
@@ -439,7 +439,7 @@ class Create(CreateTemplate):
     mask_img = self.canvas_1.get_image()
     self.drawCanvas()
     return mask_img
-  
+
   def clipXY(self):
     odx = self.dx
     ody = self.dy
@@ -453,13 +453,13 @@ class Create(CreateTemplate):
     if self.sy + self.dy + self.minWH*zoom > self.imgH - 1:
       self.dy = self.imgH - self.sy - self.minWH*zoom - 1
     return self.dx-odx,self.dy-ody
-      
+
   def clipZoom(self):
     if self.zoom+self.dz > 1:
       self.dz = 1-self.zoom
     if self.zoom+self.dz<0.1:
       self.dz = 0.1-self.zoom
-  
+
   def move_canvas(self,x,y):
     self.dx = (self.xds - x)*self.mvRatio*self.zoom
     self.dy = (self.yds - y)*self.mvRatio*self.zoom
@@ -473,12 +473,12 @@ class Create(CreateTemplate):
     dx = dx*factor
     dy = dy*factor
     for point in self.erase_points:
-        point.x -= dx
-        point.y -= dy
+      point.x -= dx
+      point.y -= dy
     for point in self.enhance_points:
-        point.x -= dx
-        point.y -= dy
-  
+      point.x -= dx
+      point.y -= dy
+
   def saveXY(self,zooming=False):
     self.sx = self.sx + self.dx
     self.sy = self.sy + self.dy
@@ -491,7 +491,7 @@ class Create(CreateTemplate):
     point.x = center + scale*(point.x-center)
     point.y = center + scale*(point.y-center)
     point.rad = scale*point.rad
-    
+
   def scale_points(self):
     halfW = self.canvas_1.get_width()/2
     scale = self.zoom/(self.zoom+self.dz)
@@ -499,29 +499,29 @@ class Create(CreateTemplate):
       self.scale_point(point,halfW,scale)
     for point in self.enhance_points:
       self.scale_point(point,halfW,scale)
-  
+
   def zoom_canvas(self,dz):
     self.dz = dz
     #clip zoom
     self.clipZoom()
-    
+
     self.dx = -(self.dz)*self.minWH/2
     self.dy = -(self.dz)*self.minWH/2
-    
+
     self.scale_points()
-      
+
     dx,dy = self.clipXY()
     self.move_points(dx,dy)
     self.saveXY(zooming=True)
-  
+
   def save_zoom_canvas(self,dz):
     dz = self.zoom*dz
     self.zoom_canvas(dz)
     self.zoom = self.zoom + self.dz
     self.dz = 0
-  
-## CANVAS SIGNALS
-  
+
+  ## CANVAS SIGNALS
+
   #canvas reset
   def canvas_1_reset(self, **event_args):
     self.drawCanvas()
@@ -537,7 +537,7 @@ class Create(CreateTemplate):
     if (x-cX)*(x-cX) + (y-cY)*(y-cY) < r_2:
       return True
     return False
-  
+
   #mouse press
   def canvas_1_mouse_down(self, x, y, button, **event_args):
     if self.img is None:
@@ -557,7 +557,7 @@ class Create(CreateTemplate):
         self.dragging = True
         self.xds = x
         self.yds = y
-      
+
   #mouse release
   def canvas_1_mouse_up(self, x, y, button, **event_args):
     if self.img is None:
@@ -606,12 +606,12 @@ class Create(CreateTemplate):
       need_redraw = True
     if need_redraw:
       self.drawCanvas()
-    
+
   def button_plus_click(self, **event_args):
     if self.img is not None:
       self.save_zoom_canvas(-0.1)
       self.drawCanvas()
-      
+
 
   def button_minus_click(self, **event_args):
     if self.img is not None:
@@ -637,7 +637,7 @@ class Create(CreateTemplate):
     self.enhance_mode = False
     self.refresh_edit_mode()
     self.drawCanvas()
-    
+
   def button_mask_enhancer_click(self, **event_args):
     self.enhance_mode = not self.enhance_mode
     self.erase_mode = False
@@ -693,7 +693,6 @@ class Create(CreateTemplate):
     #   self.task = anvil.server.call_s('launch_bg_get_creations')
     #   self.timer_1.interval = 0.5
 
- 
 
 
 
@@ -701,5 +700,6 @@ class Create(CreateTemplate):
 
 
 
-  
-    
+
+
+
