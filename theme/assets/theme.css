@@ -162,18 +162,42 @@ canvas {
 }
 
 /* Result card - без фона */
-.anvil-component[data-anvil-name="card_1"] {
+.anvil-component[data-anvil-name="card_1"],
+.anvil-component[data-anvil-name="card_1"] .anvil-m3-card,
+.anvil-component[data-anvil-name="card_1"] > * {
   background: transparent !important;
+  background-color: transparent !important;
   box-shadow: none !important;
 }
 
+/* Убираем белый фон у всех карточек результата */
+.anvil-m3-card {
+  background: transparent !important;
+}
+
+.anvil-m3-card-content-container {
+  background: transparent !important;
+  padding: 0 !important;
+}
+
 /* Close button в результате - X с текстом CLOSE */
-[name="link_close_icon"],
+[name="link_close_icon"] {
+  color: #666666 !important;
+  text-decoration: none !important;
+  display: block !important;
+  text-align: center !important;
+  font-family: 'Material Icons' !important;
+  line-height: 1 !important;
+}
+
 [name="link_delete"] {
   color: #666666 !important;
   text-decoration: none !important;
   display: block !important;
   text-align: center !important;
+  font-size: 10px !important;
+  font-weight: 500 !important;
+  letter-spacing: 0.5px !important;
 }
 
 [name="link_close_icon"]:hover,

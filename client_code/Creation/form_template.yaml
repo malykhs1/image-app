@@ -11,9 +11,9 @@ components:
         name: link_close_icon
         properties:
           align: center
-          bold: true
-          font_size: 24
-          icon: 'fa:times-circle'
+          bold: false
+          font_size: 28
+          icon: 'mi:close'
           spacing:
             margin: [null, '0', '0', null]
             padding: [null, '0', '0', '0']
