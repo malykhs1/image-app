@@ -1,3 +1,6 @@
+/* Import Mona Sans font */
+@import url('https://fonts.googleapis.com/css2?family=Mona+Sans:wght@400;500;600;700&display=swap');
+
 /* Typography */
 body {
   /*added Montserrat as default*/
@@ -97,6 +100,28 @@ canvas {
 [anvil-role="crop-panel"] button {
   margin-top: 15px !important;
   margin-bottom: 5px !important;
+}
+
+/* Custom button styles - Browse File and Generate Artwork */
+.anvil-component button,
+.anvil-component .file-loader-button {
+  background: #FFC985 !important;
+  font-family: 'Mona Sans', sans-serif !important;
+  font-weight: 500 !important;
+  font-size: 19px !important;
+  line-height: 100% !important;
+  letter-spacing: -0.03em !important;
+  border: none !important;
+  padding: 16px 32px !important;
+  border-radius: 8px !important;
+  transition: all 0.3s ease !important;
+}
+
+.anvil-component button:hover,
+.anvil-component .file-loader-button:hover {
+  background: #FFB85D !important;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(255, 201, 133, 0.4) !important;
 }
 
 #anvil-header {

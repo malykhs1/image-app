@@ -140,6 +140,10 @@ class Create(CreateTemplate):
       self.step_indicator_3.role = 'step-active'
       self.step_indicator_3.bold = True
       self.button_close.visible = False
+      # Скрываем canvas и элементы управления на этапе 3
+      self.flow_panel_canvas.visible = False
+      self.flow_panel_zoom.visible = False
+      self.button_create.visible = False
 
   def step_indicator_1_click(self, **event_args):
     """Переход к этапу 1"""
