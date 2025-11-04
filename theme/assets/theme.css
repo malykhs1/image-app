@@ -191,11 +191,11 @@ canvas {
 
 
 @media (max-width: 600px) {
-    .anvil-flow-panel.anvil-flow-spacing-medium>.anvil-flow-panel-gutter {
-      margin-left: 3px !important;
-      margin-right: 0 !important;
-      display: grid !important;
-      grid-template-columns: 1fr 1fr !important;
+  .anvil-flow-panel.anvil-flow-spacing-medium>.anvil-flow-panel-gutter {
+    margin-left: 3px !important;
+    margin-right: 0 !important;
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
   }
 
   [anvil-role="step-inactive"],
