@@ -168,17 +168,17 @@ canvas {
 }
 
 /* Close button в результате - X с текстом CLOSE */
-[name="label_close"] {
-  color: #666666 !important;
-  cursor: pointer;
-}
-
+[name="link_close_icon"],
 [name="link_delete"] {
   color: #666666 !important;
-  font-size: 10px !important;
   text-decoration: none !important;
   display: block !important;
   text-align: center !important;
+}
+
+[name="link_close_icon"]:hover,
+[name="link_delete"]:hover {
+  color: #333333 !important;
 }
 
 #anvil-header {

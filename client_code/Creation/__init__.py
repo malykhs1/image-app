@@ -41,9 +41,6 @@ class Creation(CreationTemplate):
     self.text_length.text = 'String length: ' + str(length_meters) + ' meters'
     self.locale = locale
     
-    # Делаем иконку close кликабельной
-    self.label_close.set_event_handler('click', self.link_delete_click)
-    
     if locale == 'he':
       self.button_add_to_cart.text = 'הוספה לעגלה'
       self.button_add_to_cart.font_family = 'Rubik'
