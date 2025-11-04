@@ -132,6 +132,7 @@ class Create(CreateTemplate):
       self.step_indicator_2.bold = True
       self.button_close.visible = True
       self.canvas_1.visible = True
+      self.flow_panel_canvas.visible = True  # Показываем canvas panel
       self.flow_panel_zoom.visible = True
       self.button_create.visible = True
       self.drawCanvas()
