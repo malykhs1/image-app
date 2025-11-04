@@ -47,10 +47,6 @@ class Creation(CreationTemplate):
       self.text_length.text = f'אורך חוט: {length_meters} מטרים'
       self.text_length.font_family = 'Rubik'
 
-  def link_delete_click(self, **event_args):
-    self.remove_from_parent()
-    anvil.server.call_s('delete_creation', self.item)
-
   def button_add_to_cart_click(self, **event_args):
     self.linear_progress_cart.visible = True
     self.spacer_bottom.visible = True

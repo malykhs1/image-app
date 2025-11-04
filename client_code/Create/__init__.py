@@ -139,7 +139,7 @@ class Create(CreateTemplate):
       self.flow_panel_creations.visible = True
       self.step_indicator_3.role = 'step-active'
       self.step_indicator_3.bold = True
-      self.button_close.visible = False
+      self.button_close.visible = True
       # Скрываем canvas и элементы управления на этапе 3
       self.flow_panel_canvas.visible = False
       self.flow_panel_zoom.visible = False
@@ -160,11 +160,16 @@ class Create(CreateTemplate):
       self.set_step(3)
 
   def button_close_click(self, **event_args):
-    """Закрытие и возврат к этапу 1"""
-    self.img = None
-    self.resetMoveAndZoom()
-    self.canvas_1.visible = False
-    self.set_step(1)
+    """Закрытие: на 3-м этапе -> к этапу 2, на 2-м этапе -> к этапу 1"""
+    if self.current_step == 3:
+      # С третьего этапа возвращаемся ко второму
+      self.set_step(2)
+    else:
+      # Со второго этапа возвращаемся к первому и сбрасываем изображение
+      self.img = None
+      self.resetMoveAndZoom()
+      self.canvas_1.visible = False
+      self.set_step(1)
 
   def setup_drag_and_drop(self):
     drop_panel_node = get_dom_node(self.flow_panel_canvas)
